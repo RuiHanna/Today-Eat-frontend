@@ -1,1 +1,55 @@
 /* pages/rank.wxss */
+.container {
+  padding: 20rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.rank-item {
+  width: 90%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 16rpx;
+}
+
+.rank-number {
+  font-size: 28rpx;
+  color: #ff6347;
+  width: 30rpx;
+}
+
+.dish-img {
+  width: 100rpx;
+  height: 100rpx;
+  margin-left: 50rpx;
+  border-radius: 12rpx;
+}
+
+.dish-info {
+  flex: 1;
+}
+
+.dish-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-left: 20rpx;
+}
+
+.dish-desc {
+  font-size: 24rpx;
+  color: #888;
+  margin-left: 20rpx;
+}
+
+.heat-score {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+}

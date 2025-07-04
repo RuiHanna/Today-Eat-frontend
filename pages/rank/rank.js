@@ -1,66 +1,38 @@
 // pages/rank.js
 Page({
-
-  /**
-   * 页面的初始数据
-   */
-  data: {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
+    data: {
+        rankList: [],
+    },
+    onLoad() {
+        const that = this
+        wx.request({
+            url: 'http://39.106.228.153:8080/api/dishes',
+            method: 'GET',
+            success(res) {
+                if (res.data.code === 0) {
+                    // 把后端字段映射为前端需要的字段
+                    const list = res.data.data.map(item => ({
+                        name: item.name,
+                        desc: item.description,
+                        image: item.image_url,
+                        score: item.score
+                    }))
+                    that.setData({
+                        rankList: list.slice(0,10)
+                    })
+                } else {
+                    wx.showToast({
+                        title: '获取菜品失败',
+                        icon: 'none'
+                    })
+                }
+            },
+            fail() {
+                wx.showToast({
+                    title: '请求接口失败',
+                    icon: 'none'
+                })
+            }
+        })
+    }
 })

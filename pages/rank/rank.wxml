@@ -1,2 +1,16 @@
 <!--pages/rank.wxml-->
-<text>pages/rank.wxml</text>
+<view class="container">
+  <view class="title">今日热门菜品榜</view>
+
+  <block wx:for="{{rankList}}" wx:key="index">
+    <view class="rank-item">
+      <text class="rank-number">No.{{index + 1}}</text>
+      <image class="dish-img" src="{{item.image}}" />
+      <view class="dish-info">
+        <text class="dish-name">{{item.name}}</text>
+        <text class="dish-desc">{{item.desc}}</text>
+      </view>
+      <text class="heat-score">{{item.score}}分</text>
+    </view>
+  </block>
+</view>
