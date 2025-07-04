@@ -1,2 +1,22 @@
 <!--pages/chat/chat.wxml-->
-<text>pages/chat/chat.wxml</text>
+<view class="chat-container">
+  <scroll-view scroll-y scroll-top="{{scrollTop}}" class="chat-scroll" scroll-with-animation>
+    <block wx:for="{{messages}}" wx:key="index">
+      <view wx:if="{{item.from === 'user'}}" class="user-msg">
+        <view class="user-bubble">{{item.content}}</view>
+      </view>
+
+      <view wx:if="{{item.from === 'bot'}}" class="bot-msg">
+        <image class="avatar" src="/img/ai-avatar.png" />
+        <view class="bot-reply">
+          <towxml nodes="{{item.content}}" />
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <view class="input-area">
+    <input class="input" placeholder="想吃点什么？" value="{{inputText}}" bindinput="onInput" />
+    <button style="width: 25%; margin-right: 40rpx;" class="send-btn" bindtap="sendMessage" loading="{{loading}}">发送</button>
+  </view>
+</view>

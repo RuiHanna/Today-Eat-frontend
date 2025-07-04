@@ -1,66 +1,77 @@
 // pages/chat/chat.js
+const app = getApp();
+
 Page({
+    data: {
+        messages: [],
+        inputText: '',
+        loading: false,
+        scrollTop: 0
+    },
 
-  /**
-   * 页面的初始数据
-   */
-  data: {
+    onInput(e) {
+        this.setData({
+            inputText: e.detail.value
+        })
+    },
 
-  },
+    sendMessage() {
+        const userInput = this.data.inputText.trim()
+        if (!userInput) return
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
+        const newMessages = this.data.messages.concat({
+            from: 'user',
+            content: userInput
+        })
 
-  },
+        const that = this;
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
+        this.setData({
+            messages: newMessages,
+            inputText: "",
+            loading: true,
+        })
 
-  },
+        // 调用后端接口
+        wx.request({
+            url: 'http://39.106.228.153:8080/api/chat',
+            method: 'POST',
+            data: {
+                message: userInput
+            },
+            success(res) {
+                if (res.data.code === 0) {
+                    const replyMarkdown = res.data.reply
+                    const replyNodes = app.towxml(replyMarkdown, 'markdown')
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
+                    that.setData({
+                        messages: that.data.messages.concat({
+                            from: 'bot',
+                            content: replyNodes
+                        }),
+                        loading: false,
+                        scrollTop: 999999,
+                    })
+                } else {
+                    that.setData({
+                        loading: false
+                    })
+                    wx.showToast({
+                        title: '获取回复失败',
+                        icon: 'none'
+                    })
+                }
+            },
 
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
+            fail: () => {
+                this.setData({
+                    loading: false
+                })
+                wx.showToast({
+                    title: '接口请求失败',
+                    icon: 'none'
+                })
+            }
+        })
+    },
 })
