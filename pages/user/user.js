@@ -1,66 +1,33 @@
 // pages/user/user.js
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    user: {
+      avatarUrl: '/img/default-avatar.png',
+      nickname: '未登录用户',
+      mealCount: 42,
+      favoriteTaste: '辣',
+      commonMood: '压力大',
+      moodFood: '麻辣香锅'
+    },
+    showFavorites: false,
+    showHistory: false,
+    favorites: [
+      { name: '酸菜鱼' },
+      { name: '香辣虾' },
+      { name: '红烧牛肉' }
+    ],
+    history: [
+      { name: '宫保鸡丁' },
+      { name: '回锅肉' },
+      { name: '干锅肥肠' }
+    ]
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
+  toggleFavorites() {
+    this.setData({ showFavorites: !this.data.showFavorites })
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
+  toggleHistory() {
+    this.setData({ showHistory: !this.data.showHistory })
   }
 })

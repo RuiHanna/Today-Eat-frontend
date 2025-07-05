@@ -1,2 +1,41 @@
 <!--pages/user/user.wxml-->
-<text>pages/user/user.wxml</text>
+<!-- pages/mine/mine.wxml -->
+<view class="mine-container">
+  <!-- 用户信息区域 -->
+  <view class="user-info">
+    <image class="avatar" src="{{user.avatarUrl}}" mode="aspectFill" />
+    <view class="nickname">{{user.nickname}}</view>
+    <view class="stats">
+      <text>吃了 {{user.mealCount}} 餐</text>
+      <text>偏好口味：{{user.favoriteTaste}}</text>
+      <text>「{{user.commonMood}}」时喜欢吃：{{user.moodFood}}</text>
+    </view>
+  </view>
+
+  <!-- 收藏与历史 -->
+  <view class="section">
+    <view class="section-header" bindtap="toggleFavorites">
+      <text>我的收藏</text>
+      <text wx:if="{{showFavorites}}">▲</text>
+      <text wx:else>▼</text>
+    </view>
+    <view wx:if="{{showFavorites}}" class="section-content">
+      <block wx:for="{{favorites}}" wx:key="index">
+        <view class="dish-item">{{item.name}}</view>
+      </block>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header" bindtap="toggleHistory">
+      <text>推荐历史</text>
+      <text wx:if="{{showHistory}}">▲</text>
+      <text wx:else>▼</text>
+    </view>
+    <view wx:if="{{showHistory}}" class="section-content">
+      <block wx:for="{{history}}" wx:key="index">
+        <view class="dish-item">{{item.name}}</view>
+      </block>
+    </view>
+  </view>
+</view>
