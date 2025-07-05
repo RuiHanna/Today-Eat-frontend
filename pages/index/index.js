@@ -1,49 +1,86 @@
 // index.js
-const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
-
 Page({
   data: {
-    motto: 'Hello World',
-    userInfo: {
-      avatarUrl: defaultAvatarUrl,
-      nickName: '',
+    recommend: {
+      name: "麻辣香锅",
+      image: "https://bkimg.cdn.bcebos.com/pic/2fdda3cc7cd98d1001e9d8eda167af0e7bec55e73aec?x-bce-process=image/format,f_auto/watermark,image_d2F0ZXIvYmFpa2UyNzI,g_7,xp_5,yp_5,P_20/resize,m_lfit,limit_1,h_1080",
+      reason: "今天气温较低，来点辣的暖暖身子！",
+      priceMin: 25,
+      priceMax: 45
     },
-    hasUserInfo: false,
-    canIUseGetUserProfile: wx.canIUse('getUserProfile'),
-    canIUseNicknameComp: wx.canIUse('input.type.nickname'),
+    filters: {
+      taste: "辣",
+      distance: "2km内",
+      budget: 30,
+      mood: "开心",
+      weather: "晴"
+    },
+    tasteOptions: ["辣", "甜", "咸", "酸", "苦"],
+    distanceOptions: ["1km", "2km内", "3km", "不限"],
+    moodOptions: ["开心", "压力大", "心情低落", "想奖励自己"],
+    weatherOptions: ["晴", "多云", "阴", "小雨", "大雨"],
+
+    guessList: [
+      { name: "干锅花菜", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+    ],
+    historyList: [
+      { name: "番茄炒蛋", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+      { name: "牛肉面", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+    ]
   },
-  bindViewTap() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
-  },
-  onChooseAvatar(e) {
-    const { avatarUrl } = e.detail
-    const { nickName } = this.data.userInfo
+
+  onTasteChange(e) {
     this.setData({
-      "userInfo.avatarUrl": avatarUrl,
-      hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
+      "filters.taste": this.data.tasteOptions[e.detail.value]
     })
   },
-  onInputChange(e) {
-    const nickName = e.detail.value
-    const { avatarUrl } = this.data.userInfo
+
+  onDistanceChange(e) {
     this.setData({
-      "userInfo.nickName": nickName,
-      hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
+      "filters.distance": this.data.distanceOptions[e.detail.value]
     })
   },
-  getUserProfile(e) {
-    // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-    wx.getUserProfile({
-      desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-      success: (res) => {
-        console.log(res)
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
+
+  onBudgetSlide(e) {
+    this.setData({
+      'filters.budget': e.detail.value
+    })
+  },
+  
+  onWeatherChange(e) {
+    this.setData({
+      'filters.weather': this.data.weatherOptions[e.detail.value]
+    })
+  },
+  
+
+  onMoodChange(e) {
+    this.setData({
+      "filters.mood": this.data.moodOptions[e.detail.value]
+    })
+  },
+
+  refreshRecommend() {
+    wx.showToast({
+      title: '已为你换一组推荐',
+      icon: 'success'
+    })
+    // TODO: 请求后端新推荐
+  },
+
+  searchInMeituan() {
+    const keyword = this.data.recommend.name
+    wx.navigateToMiniProgram({
+      appId: "wxde8ac0a21135c07d", // 美团小程序
+      path: `pages/index/index?query=${encodeURIComponent(keyword)}`,
+      fail() {
+        wx.showToast({ title: '打开美团失败', icon: 'none' })
       }
     })
-  },
+  }
 })
