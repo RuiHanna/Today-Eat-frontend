@@ -1,33 +1,236 @@
 // pages/user/user.js
+const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+
 Page({
   data: {
+    canIUseGetUserProfile: wx.canIUse('getUserProfile'),
     user: {
-      avatarUrl: '/img/default-avatar.png',
-      nickname: '未登录用户',
-      mealCount: 42,
-      favoriteTaste: '辣',
-      commonMood: '压力大',
-      moodFood: '麻辣香锅'
+      avatarUrl: defaultAvatarUrl,
+      nickname: '',
+      mealCount: 0,
+      favoriteTaste: '未统计',
+      commonMood: '无',
+      moodFood: '暂无推荐'
     },
+    loggedIn: false,
     showFavorites: false,
     showHistory: false,
-    favorites: [
-      { name: '酸菜鱼' },
-      { name: '香辣虾' },
-      { name: '红烧牛肉' }
+    favorites: [{
+        name: '酸菜鱼'
+      },
+      {
+        name: '香辣虾'
+      },
+      {
+        name: '红烧牛肉'
+      }
     ],
-    history: [
-      { name: '宫保鸡丁' },
-      { name: '回锅肉' },
-      { name: '干锅肥肠' }
-    ]
+    history: [{
+        name: '宫保鸡丁'
+      },
+      {
+        name: '回锅肉'
+      },
+      {
+        name: '干锅肥肠'
+      }
+    ],
+  },
+
+  onLoad() {
+    const stored = wx.getStorageSync('userInfo')
+    const userID = wx.getStorageSync('user_id')
+    if (stored && userID) {
+      this.setData({
+        user: {
+          ...this.data.user,
+          avatarUrl: stored.avatarUrl || defaultAvatarUrl,
+          nickname: stored.nickname || '未命名',
+        },
+        loggedIn: true
+      })
+    }
+  },
+
+  // 微信一键登录
+  onLogin() {
+    const that = this
+    wx.getUserProfile({
+      desc: '用于登录和同步用户信息',
+      success(profileRes) {
+        const userInfo = profileRes.userInfo
+        wx.login({
+          success(loginRes) {
+            // console.log('login payload:', {
+            //   code: loginRes.code,
+            //   nickname: userInfo.nickName,
+            //   avatar_url: userInfo.avatarUrl
+            // })
+            wx.request({
+              url: 'http://39.106.228.153:8080/api/user/wxlogin',
+              method: 'POST',
+              data: {
+                code: loginRes.code,
+                nickname: userInfo.nickName,
+                avatar_url: userInfo.avatarUrl
+              },
+              success(res) {
+                if (res.data.code === 0) {
+                  wx.setStorageSync('user_id', res.data.user_id)
+                  wx.setStorageSync('userInfo', {
+                    nickname: userInfo.nickName,
+                    avatarUrl: userInfo.avatarUrl
+                  })
+                  that.setData({
+                    user: {
+                      ...that.data.user,
+                      nickname: userInfo.nickName,
+                      avatarUrl: userInfo.avatarUrl
+                    },
+                    loggedIn: true
+                  })
+                  wx.showToast({
+                    title: '登录成功'
+                  })
+                } else {
+                  wx.showToast({
+                    title: '登录失败',
+                    icon: 'none'
+                  })
+                }
+              }
+            })
+          }
+        })
+      }
+    })
   },
 
   toggleFavorites() {
-    this.setData({ showFavorites: !this.data.showFavorites })
+    this.setData({
+      showFavorites: !this.data.showFavorites
+    })
   },
 
   toggleHistory() {
-    this.setData({ showHistory: !this.data.showHistory })
+    this.setData({
+      showHistory: !this.data.showHistory
+    })
+  },
+
+  // 修改昵称实时绑定
+  onNicknameInput(e) {
+    const nickname = e.detail.value
+    this.setData({
+      'user.nickname': nickname
+    })
+  },
+
+  // 保存昵称
+  onSaveProfile() {
+    const userID = wx.getStorageSync('user_id')
+    const {
+      nickname
+    } = this.data.user
+
+    if (!nickname) {
+      wx.showToast({
+        title: '昵称不能为空',
+        icon: 'none'
+      })
+      return
+    }
+
+    wx.request({
+      url: 'http://39.106.228.153:8080/api/user/update_nickname',
+      method: 'POST',
+      data: {
+        user_id: userID,
+        nickname: nickname
+      },
+      success: (res) => {
+        if (res.data.code === 0) {
+          wx.showToast({
+            title: '昵称已更新'
+          })
+          const userInfo = wx.getStorageSync('userInfo') || {}
+          userInfo.nickname = nickname
+          wx.setStorageSync('userInfo', userInfo)
+        } else {
+          wx.showToast({
+            title: '更新失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+
+  //保存头像
+  onChooseAvatar(e) {
+    const avatarUrl = e.detail.avatarUrl
+    const userID = wx.getStorageSync('user_id')
+    const that = this
+
+    if (!userID) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 下载临时头像文件
+    wx.downloadFile({
+      url: avatarUrl,
+      success(res) {
+        if (res.statusCode === 200) {
+          wx.uploadFile({
+            url: 'http://39.106.228.153:8080/api/user/avatar',
+            filePath: res.tempFilePath,
+            name: 'avatar',
+            formData: {
+              user_id: userID
+            },
+            success(uploadRes) {
+              const result = JSON.parse(uploadRes.data)
+              if (result.code === 0) {
+                const newAvatar = result.avatar_url + '?t=' + Date.now()
+                // 更新前端
+                that.setData({
+                  'user.avatarUrl': newAvatar
+                })
+                // 同步缓存
+                const userInfo = wx.getStorageSync('userInfo') || {}
+                userInfo.avatarUrl = newAvatar
+                wx.setStorageSync('userInfo', userInfo)
+
+                wx.showToast({
+                  title: '头像已更新'
+                })
+              } else {
+                wx.showToast({
+                  title: '上传失败',
+                  icon: 'none'
+                })
+              }
+            },
+            fail() {
+              wx.showToast({
+                title: '上传出错',
+                icon: 'none'
+              })
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '头像下载失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
   }
+
+
 })

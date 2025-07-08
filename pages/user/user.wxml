@@ -1,41 +1,65 @@
-<!--pages/user/user.wxml-->
-<!-- pages/mine/mine.wxml -->
-<view class="mine-container">
-  <!-- 用户信息区域 -->
-  <view class="user-info">
-    <image class="avatar" src="{{user.avatarUrl}}" mode="aspectFill" />
-    <view class="nickname">{{user.nickname}}</view>
-    <view class="stats">
-      <text>吃了 {{user.mealCount}} 餐</text>
-      <text>偏好口味：{{user.favoriteTaste}}</text>
-      <text>「{{user.commonMood}}」时喜欢吃：{{user.moodFood}}</text>
-    </view>
-  </view>
+<!--user.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 用户信息展示 -->
+    <view class="userinfo">
+      <!-- 未登录 -->
+      <block wx:if="{{!loggedIn}}">
+        <button class="login-button" bindtap="onLogin">微信一键登录</button>
+      </block>
+      <!-- 登录后 -->
+      <block wx:else>
+        <!-- 用户信息编辑区域：头像 + 昵称 + 按钮 -->
+        <view class="profile-edit">
+          <!-- 左侧头像 -->
+          <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+            <image class="userinfo-avatar" src="{{user.avatarUrl}}" mode="cover"></image>
+          </button>
 
-  <!-- 收藏与历史 -->
-  <view class="section">
-    <view class="section-header" bindtap="toggleFavorites">
-      <text>我的收藏</text>
-      <text wx:if="{{showFavorites}}">▲</text>
-      <text wx:else>▼</text>
-    </view>
-    <view wx:if="{{showFavorites}}" class="section-content">
-      <block wx:for="{{favorites}}" wx:key="index">
-        <view class="dish-item">{{item.name}}</view>
+          <!-- 右侧昵称和保存 -->
+          <view class="nickname-side">
+            <view class="nickname-wrapper">
+              <text class="nickname-label">昵称</text>
+              <input class="nickname-input" value="{{user.nickname}}" bind:input="onNicknameInput" />
+            </view>
+            <button class="save-button" bindtap="onSaveProfile">保存修改</button>
+          </view>
+        </view>
+
+
+        <!-- 显示统计信息 -->
+        <view class="stats">
+          <text>🍱 吃了多少餐?：{{user.mealCount}}</text>
+          <text>🍭 喜欢的口味：{{user.favoriteTaste}}</text>
+          <text>😋 心情「{{user.commonMood}}」时喜欢吃：{{user.moodFood}}</text>
+        </view>
       </block>
     </view>
-  </view>
-
-  <view class="section">
-    <view class="section-header" bindtap="toggleHistory">
-      <text>推荐历史</text>
-      <text wx:if="{{showHistory}}">▲</text>
-      <text wx:else>▼</text>
+    <!-- 我的收藏 -->
+    <view class="section">
+      <view class="section-header" bindtap="toggleFavorites">
+        <text>我的收藏</text>
+        <text wx:if="{{showFavorites}}">▲</text>
+        <text wx:else>▼</text>
+      </view>
+      <view wx:if="{{showFavorites}}" class="section-content">
+        <block wx:for="{{favorites}}" wx:key="index">
+          <view class="dish-item">{{item.name}}</view>
+        </block>
+      </view>
     </view>
-    <view wx:if="{{showHistory}}" class="section-content">
-      <block wx:for="{{history}}" wx:key="index">
-        <view class="dish-item">{{item.name}}</view>
-      </block>
+    <!-- 推荐历史 -->
+    <view class="section">
+      <view class="section-header" bindtap="toggleHistory">
+        <text>推荐历史</text>
+        <text wx:if="{{showHistory}}">▲</text>
+        <text wx:else>▼</text>
+      </view>
+      <view wx:if="{{showHistory}}" class="section-content">
+        <block wx:for="{{history}}" wx:key="index">
+          <view class="dish-item">{{item.name}}</view>
+        </block>
+      </view>
     </view>
   </view>
-</view>
+</scroll-view>
