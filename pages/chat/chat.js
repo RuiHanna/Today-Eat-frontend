@@ -1,77 +1,82 @@
 // pages/chat/chat.js
-const app = getApp();
+let socketTask = null;
 
 Page({
-    data: {
-        messages: [],
-        inputText: '',
-        loading: false,
-        scrollTop: 0
-    },
+  data: {
+    inputText: '',
+    messages: [],
+    loading: false,
+    scrollTop: 0,
+  },
 
-    onInput(e) {
-        this.setData({
-            inputText: e.detail.value
-        })
-    },
+  onInput(e) {
+    this.setData({ inputText: e.detail.value });
+  },
 
-    sendMessage() {
-        const userInput = this.data.inputText.trim()
-        if (!userInput) return
+  sendMessage() {
+    const message = this.data.inputText.trim();
+    if (!message) return;
 
-        const newMessages = this.data.messages.concat({
-            from: 'user',
-            content: userInput
-        })
+    // 添加用户消息
+    const newMessages = this.data.messages.concat({
+      from: 'user',
+      content: message,
+    });
 
-        const that = this;
+    // 添加空的 bot 消息用于后续追加
+    newMessages.push({
+      from: 'bot',
+      content: '',
+    });
 
-        this.setData({
-            messages: newMessages,
-            inputText: "",
-            loading: true,
-        })
+    this.setData({
+      messages: newMessages,
+      inputText: '',
+      loading: true,
+    }, this.scrollToBottom);
 
-        // 调用后端接口
-        wx.request({
-            url: 'http://39.106.228.153:8080/api/chat',
-            method: 'POST',
-            data: {
-                message: userInput
-            },
-            success(res) {
-                if (res.data.code === 0) {
-                    const replyMarkdown = res.data.reply
-                    const replyNodes = app.towxml(replyMarkdown, 'markdown')
+    // 建立 WebSocket 连接
+    socketTask = wx.connectSocket({
+      url: 'ws://39.106.228.153:8080/api/chat/ws', // 替换为你的服务器地址
+      success: () => console.log('WebSocket connected'),
+      fail: (err) => {
+        console.error('连接失败', err);
+        wx.showToast({ title: '连接失败', icon: 'none' });
+      }
+    });
 
-                    that.setData({
-                        messages: that.data.messages.concat({
-                            from: 'bot',
-                            content: replyNodes
-                        }),
-                        loading: false,
-                        scrollTop: 999999,
-                    })
-                } else {
-                    that.setData({
-                        loading: false
-                    })
-                    wx.showToast({
-                        title: '获取回复失败',
-                        icon: 'none'
-                    })
-                }
-            },
+    socketTask.onOpen(() => {
+      // 发送用户消息
+      socketTask.send({
+        data: JSON.stringify({ message }),
+      });
+    });
 
-            fail: () => {
-                this.setData({
-                    loading: false
-                })
-                wx.showToast({
-                    title: '接口请求失败',
-                    icon: 'none'
-                })
-            }
-        })
-    },
-})
+    // 接收流式消息
+    socketTask.onMessage((res) => {
+      const lastIndex = this.data.messages.length - 1;
+      const updatedBotMsg = this.data.messages[lastIndex].content + res.data;
+
+      this.setData({
+        [`messages[${lastIndex}].content`]: updatedBotMsg,
+      }, this.scrollToBottom);
+    });
+
+    socketTask.onClose(() => {
+      console.log('WebSocket closed');
+      this.setData({ loading: false });
+    });
+
+    socketTask.onError((err) => {
+      console.error('WebSocket error:', err);
+      wx.showToast({ title: 'AI异常', icon: 'none' });
+      this.setData({ loading: false });
+    });
+  },
+
+  scrollToBottom() {
+    this.setData({
+      scrollTop: 999999, // 一个足够大的值，确保滚动到底部
+    });
+  },
+});
