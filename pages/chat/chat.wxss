@@ -15,12 +15,13 @@
 .user-msg {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 20rpx;
+  margin-bottom: 40rpx;
+  margin-top: 40rpx;
 }
 
 .user-bubble {
   max-width: 70%;
-  background-color: #dcefff; /* 浅蓝色 */
+  background-color: #ffe9b0;
   padding: 20rpx 30rpx;
   border-radius: 30rpx;
   border-bottom-right-radius: 0;
@@ -76,7 +77,7 @@
 }
 
 .send-btn {
-  background-color: #007aff;
+  background-color: #FFB800;
   color: #fff;
   font-size: 28rpx;
   height: 72rpx;

@@ -9,8 +9,8 @@
       <view wx:if="{{item.from === 'bot'}}" class="bot-msg">
         <image class="avatar" src="/icons/ai-avatar.png" />
         <view class="bot-reply">
-          <!-- <towxml nodes="{{item.content}}" /> -->
-          <text>{{item.content}}</text>
+          <towxml nodes="{{item.nodes}}" />
+          <!-- <text>{{item.content}}</text> -->
         </view>
       </view>
     </block>
