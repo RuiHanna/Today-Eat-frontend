@@ -61,11 +61,6 @@ Page({
         const userInfo = profileRes.userInfo
         wx.login({
           success(loginRes) {
-            // console.log('login payload:', {
-            //   code: loginRes.code,
-            //   nickname: userInfo.nickName,
-            //   avatar_url: userInfo.avatarUrl
-            // })
             wx.request({
               url: 'http://39.106.228.153:8080/api/user/wxlogin',
               method: 'POST',

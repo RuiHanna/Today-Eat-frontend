@@ -52,13 +52,20 @@ Page({
   },
 
   onLoad() {
+    const userId = wx.getStorageSync('user_id')
+    if (userId) {
+      this.setData({
+        userId
+      })
+    } else {
+      console.warn('尚未登录，未获取到 user_id')
+    }
     this.loadRandomRecommend()
   },
 
   //随机推荐
-  // 假设你有用户ID存在 this.data.userId
   loadRandomRecommend() {
-    const userId = this.data.userId || 0; // 先保证有值，实际要从登录信息获取
+    const userId = this.data.userId || 0;
 
     wx.request({
       url: `http://39.106.228.153:8080/api/dish/random?user_id=${userId}`,
@@ -85,14 +92,20 @@ Page({
   },
 
   toggleLike() {
-    const { recommend, userId } = this.data;
+    const {
+      recommend,
+      userId
+    } = this.data;
     if (!userId || !recommend.id) {
-      wx.showToast({ title: '用户未登录', icon: 'none' });
+      wx.showToast({
+        title: '用户未登录',
+        icon: 'none'
+      });
       return;
     }
-  
+
     const action = recommend.liked ? 'unlike' : 'like';
-  
+
     wx.request({
       url: `http://39.106.228.153:8080/api/like/${action}`,
       method: 'POST',
@@ -107,15 +120,21 @@ Page({
             'recommend.liked': !recommend.liked
           });
         } else {
-          wx.showToast({ title: res.data.message || '操作失败', icon: 'none' });
+          wx.showToast({
+            title: res.data.message || '操作失败',
+            icon: 'none'
+          });
         }
       },
       fail: () => {
-        wx.showToast({ title: '网络错误', icon: 'none' });
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        });
       }
     });
   },
-  
+
 
   onTasteChange(e) {
     this.setData({
