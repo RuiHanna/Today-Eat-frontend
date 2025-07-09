@@ -16,23 +16,7 @@ Page({
     weatherOptions: ["晴☀️", "多云☁️", "阴🌥️", "小雨🌧️", "雷阵雨⛈️", "雪☃️", "雾🌫️", "打雷🌩️", "台风🌀", "流星🌠", "大风🌬️", "龙卷风🌪️", "炎热🔥"],
 
     guessList: [],
-    historyList: [{
-        name: "番茄炒蛋",
-        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
-      },
-      {
-        name: "牛肉面",
-        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
-      },
-      {
-        name: "蒜香排骨",
-        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
-      },
-      {
-        name: "蒜香排骨",
-        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
-      },
-    ]
+    historyList: []
   },
 
   onLoad() {
@@ -47,6 +31,20 @@ Page({
     }
     this.loadRandomRecommend()
     this.loadHistoryList()
+  },
+
+  // 上报推荐记录
+  reportRecommendHistory(userId, dishId) {
+    if (!userId || !dishId) return;
+
+    wx.request({
+      url: 'http://39.106.228.153:8080/api/history/add',
+      method: 'POST',
+      data: {
+        user_id: userId,
+        dish_id: dishId
+      }
+    });
   },
 
   //随机推荐
@@ -67,14 +65,7 @@ Page({
 
           // 上报推荐记录给后端
           if (userId && mainDish.id) {
-            wx.request({
-              url: 'http://39.106.228.153:8080/api/history/add',
-              method: 'POST',
-              data: {
-                user_id: userId,
-                dish_id: mainDish.id
-              }
-            });
+            this.reportRecommendHistory(userId, mainDish.id);
           }
         } else {
           wx.showToast({
@@ -92,16 +83,17 @@ Page({
     });
   },
 
+  //近期吃过
   loadHistoryList() {
     const userId = this.data.userId || 0
     if (!userId) return
-  
+
     wx.request({
       url: `http://39.106.228.153:8080/api/history?user_id=${userId}`,
       method: 'GET',
       success: (res) => {
         if (res.data.code === 0) {
-          history=res.data.history.slice(0,4);
+          history = res.data.history.slice(0, 4);
           this.setData({
             historyList: history.map(item => ({
               name: item.name,
@@ -116,6 +108,7 @@ Page({
     })
   },
 
+  //喜欢按钮
   toggleLike() {
     const {
       recommend,
@@ -165,46 +158,97 @@ Page({
     });
   },
 
-
+  //口味选择
   onTasteChange(e) {
     this.setData({
       "filters.taste": this.data.tasteOptions[e.detail.value]
     })
   },
 
+  //距离选择
   onDistanceChange(e) {
     this.setData({
       "filters.distance": this.data.distanceOptions[e.detail.value]
     })
   },
 
+  //预算选择
   onBudgetSlide(e) {
     this.setData({
       'filters.budget': e.detail.value
     })
   },
 
+  //天气选择
   onWeatherChange(e) {
     this.setData({
       'filters.weather': this.data.weatherOptions[e.detail.value]
     })
   },
 
-
+  //心情选择
   onMoodChange(e) {
     this.setData({
       "filters.mood": this.data.moodOptions[e.detail.value]
     })
   },
 
+  //定制推荐
   refreshRecommend() {
-    wx.showToast({
-      title: '已为你换一组推荐',
-      icon: 'success'
-    })
-    // TODO: 请求后端新推荐
+    const {
+      userId,
+      filters
+    } = this.data;
+
+    if (!userId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      setTimeout(() => {
+        wx.reLaunch({
+          url: '/pages/user/user'
+        });
+      }, 800);
+      return;
+    }
+
+    wx.request({
+      url: 'http://39.106.228.153:8080/api/dish/custom',
+      method: 'POST',
+      data: {
+        user_id: userId,
+        taste: filters.taste,
+        distance: filters.distance,
+        budget: filters.budget,
+        mood: filters.mood,
+        weather: filters.weather
+      },
+      success: (res) => {
+        if (res.data.code === 0 && res.data.dish) {
+          const dish = res.data.dish;
+          this.setData({
+            recommend: dish
+          });
+          // 上报推荐记录
+          this.reportRecommendHistory(userId, dish.id);
+        } else {
+          wx.showToast({
+            title: '暂无推荐',
+            icon: 'none'
+          });
+        }
+      },
+      fail: () => {
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        });
+      }
+    });
   },
 
+  //美团跳转
   searchInMeituan() {
     const keyword = this.data.recommend.name
     wx.navigateToMiniProgram({

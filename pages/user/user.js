@@ -217,7 +217,6 @@ Page({
     }
   },
 
-
   // 修改昵称实时绑定
   onNicknameInput(e) {
     const nickname = e.detail.value

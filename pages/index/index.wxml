@@ -53,9 +53,9 @@
       <slider min="10" max="100" step="10" value="{{filters.budget}}" bindchange="onBudgetSlide" />
     </view>
 
-    <!-- 第四行：换一换 -->
+    <!-- 第四行：定制推荐 -->
     <view class="refresh-wrapper">
-      <button class="refresh-btn" bindtap="refreshRecommend">换一换</button>
+      <button class="refresh-btn" bindtap="refreshRecommend">定制推荐</button>
     </view>
   </view>
 
