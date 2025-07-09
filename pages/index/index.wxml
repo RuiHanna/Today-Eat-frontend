@@ -72,7 +72,7 @@
     </view>
 
     <view class="bottom-subsection">
-      <view class="section-title">近期吃过</view>
+      <view class="section-title">近期推荐</view>
       <block wx:for="{{historyList}}" wx:key="index">
         <view class="flat-item">
           <image class="flat-thumb" src="{{item.image}}" />

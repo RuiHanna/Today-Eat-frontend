@@ -93,7 +93,9 @@ Page({
       method: 'GET',
       success: (res) => {
         if (res.data.code === 0) {
-          history = res.data.history.slice(0, 4);
+          if(res.data.history.length>=4){
+            history = res.data.history.slice(0, 4);
+          }else history=res.data.history;
           this.setData({
             historyList: history.map(item => ({
               name: item.name,
@@ -226,12 +228,32 @@ Page({
         wx.hideLoading(); // 无论成功与否，先隐藏加载提示
   
         if (res.data.code === 0 && res.data.dish) {
+          const dish=res.data.dish;
           this.setData({
             recommend: res.data.dish
           });
   
           // 上报推荐历史
           this.reportRecommendHistory(userId, res.data.dish.id);
+          wx.request({
+            url: 'http://39.106.228.153:8080/api/custom/add',
+            method: 'POST',
+            data: {
+              user_id: userId,
+              dish_id: dish.id,
+              taste: filters.taste,
+              distance: filters.distance,
+              budget: filters.budget,
+              mood: filters.mood,
+              weather: filters.weather,
+              reason: dish.reason
+            },
+            fail: () => {
+              console.warn('⚠️ 定制推荐记录保存失败');
+            }
+          });
+
+          this.loadHistoryList();//更新近期推荐
   
         } else {
           wx.showToast({ title: res.data.message || '暂无推荐', icon: 'none' });
