@@ -142,10 +142,12 @@ page {
   justify-content: space-between;
   border-bottom: 1rpx solid #e5e5e5;
   padding-bottom: 12rpx;
+  margin-left: 35rpx;
 }
 
 .section-content {
   padding-top: 16rpx;
+  margin-left: 30rpx;
 }
 
 .dish-item {
@@ -154,3 +156,52 @@ page {
   border-bottom: 1rpx dashed #eee;
   color: #444;
 }
+
+.dish-card {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 20rpx;
+  margin: 20rpx 0;
+  background-color: #fffbea;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.dish-img {
+  width: 180rpx;
+  height: 130rpx;
+  border-radius: 12rpx;
+  object-fit: cover;
+  margin-right: 20rpx;
+}
+
+.dish-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dish-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  color: #333;
+}
+
+.dish-desc {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.dish-extra {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.section-content-anim {
+  overflow: hidden;
+}
+

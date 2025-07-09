@@ -15,16 +15,9 @@ Page({
     loggedIn: false,
     showFavorites: false,
     showHistory: false,
-    favorites: [{
-        name: '酸菜鱼'
-      },
-      {
-        name: '香辣虾'
-      },
-      {
-        name: '红烧牛肉'
-      }
-    ],
+    favorites: [],
+    favoritesAnim: null,
+    isFavoritesExpanded: false,
     history: [{
         name: '宫保鸡丁'
       },
@@ -50,6 +43,41 @@ Page({
         loggedIn: true
       })
     }
+  },
+
+  onShow() {
+    const userId = wx.getStorageSync('user_id')
+    if (!userId) return
+
+    this.setData({
+      loggedIn: true
+    })
+    this.loadUserFavorites(userId)
+  },
+
+  loadUserFavorites(userId) {
+    wx.request({
+      url: `http://39.106.228.153:8080/api/user/${userId}/favorites`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.code === 0) {
+          this.setData({
+            favorites: res.data.favorites
+          })
+        } else {
+          wx.showToast({
+            title: '获取收藏失败',
+            icon: 'none'
+          })
+        }
+      },
+      fail: () => {
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        })
+      }
+    })
   },
 
   // 微信一键登录
@@ -102,9 +130,35 @@ Page({
   },
 
   toggleFavorites() {
-    this.setData({
-      showFavorites: !this.data.showFavorites
-    })
+    const animation = wx.createAnimation({
+      duration: 300,
+      timingFunction: 'ease-in-out'
+    });
+  
+    if (this.data.isFavoritesExpanded) {
+      // 收起动画
+      animation.height(0).opacity(0).step();
+      this.setData({
+        favoritesAnim: animation.export(),
+        isFavoritesExpanded: false, // 立即切换箭头
+      });
+      setTimeout(() => {
+        this.setData({
+          showFavorites: false,
+        });
+      }, 300);
+    } else {
+      // 展开
+      this.setData({
+        showFavorites: true,
+      }, () => {
+        animation.height('auto').opacity(1).step();
+        this.setData({
+          favoritesAnim: animation.export(),
+          isFavoritesExpanded: true, // 动画开始后切换箭头
+        });
+      });
+    }
   },
 
   toggleHistory() {

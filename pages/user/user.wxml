@@ -38,14 +38,23 @@
     <!-- 我的收藏 -->
     <view class="section">
       <view class="section-header" bindtap="toggleFavorites">
-        <text>我的收藏</text>
-        <text wx:if="{{showFavorites}}">▲</text>
+        <text>我喜欢的</text>
+        <text wx:if="{{isFavoritesExpanded}}">▲</text>
         <text wx:else>▼</text>
       </view>
-      <view wx:if="{{showFavorites}}" class="section-content">
-        <block wx:for="{{favorites}}" wx:key="index">
-          <view class="dish-item">{{item.name}}</view>
-        </block>
+      <view animation="{{favoritesAnim}}" class="section-content-anim">
+        <view wx:if="{{showFavorites}}" class="section-content">
+          <block wx:for="{{favorites}}" wx:key="id">
+            <view class="dish-card">
+              <image class="dish-img" src="{{item.image_url}}" />
+              <view class="dish-info">
+                <view class="dish-name">{{item.name}}</view>
+                <view class="dish-desc">{{item.description}}</view>
+                <view class="dish-extra">￥{{item.price}} ｜ {{item.taste}} ｜ 评分 {{item.score}}</view>
+              </view>
+            </view>
+          </block>
+        </view>
       </view>
     </view>
     <!-- 推荐历史 -->
