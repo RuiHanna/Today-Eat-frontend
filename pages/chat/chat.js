@@ -8,6 +8,7 @@ Page({
     messages: [],
     loading: false,
     scrollTop: 0,
+    showWelcome: true,
   },
 
   onInput(e) {
@@ -19,6 +20,8 @@ Page({
   sendMessage() {
     const message = this.data.inputText.trim();
     if (!message) return;
+
+    this.setData({showWelcome: false});
 
     // 添加用户消息
     const newMessages = this.data.messages.concat({

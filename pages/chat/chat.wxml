@@ -1,5 +1,14 @@
 <!--pages/chat/chat.wxml-->
 <view class="chat-container">
+
+  <block wx:if="{{showWelcome}}">
+    <view class="welcome">
+      <image class="welcome-icon" src="/icons/ai-avatar.png" />
+      <view class="bold-welcome-text">嗨！我是TodayEat</view>
+      <view class="welcome-text">我可以为你定制化推荐美食，\n今天想吃点什么呢～ 🍜</view>
+    </view>
+  </block>
+
   <scroll-view scroll-y scroll-top="{{scrollTop}}" class="chat-scroll" scroll-with-animation>
     <block wx:for="{{messages}}" wx:key="index">
       <view wx:if="{{item.from === 'user'}}" class="user-msg">
