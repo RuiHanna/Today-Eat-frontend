@@ -85,8 +85,8 @@ page {
 /* 保存按钮 */
 .save-button {
   width: 100%;
-  background-color: #FF914D;
-  color: white;
+  background-color: #FFE07A;
+  color: #333;
   font-size: 30rpx;
   padding: 16rpx 0;
   border-radius: 16rpx;
@@ -98,8 +98,8 @@ page {
 .login-button {
   margin: 80rpx auto 40rpx;
   width: 80%;
-  background-color: #FF914D;
-  color: white;
+  background-color: #FFE07A;
+  color: #333;
   font-size: 32rpx;
   padding: 16rpx 0;
   border-radius: 16rpx;

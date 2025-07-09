@@ -1,13 +1,8 @@
 // index.js
 Page({
   data: {
-    recommend: {
-      name: "麻辣香锅",
-      image: "https://bkimg.cdn.bcebos.com/pic/2fdda3cc7cd98d1001e9d8eda167af0e7bec55e73aec?x-bce-process=image/format,f_auto/watermark,image_d2F0ZXIvYmFpa2UyNzI,g_7,xp_5,yp_5,P_20/resize,m_lfit,limit_1,h_1080",
-      reason: "今天气温较低，来点辣的暖暖身子！",
-      priceMin: 25,
-      priceMax: 45
-    },
+    userId: 1,
+    recommend: null,
     filters: {
       taste: "辣🌶️",
       distance: "500m内🚶‍♀️",
@@ -16,23 +11,111 @@ Page({
       weather: "晴☀️"
     },
     tasteOptions: ["辣🌶️", "甜🍨", "咸🥗", "酸🍋‍🟩", "苦🥒"],
-    distanceOptions: ["500m内🚶‍♀️","1km🚲", "2km内🛴", "3km🚄", "不限✈️"],
+    distanceOptions: ["500m内🚶‍♀️", "1km🚲", "2km内🛴", "3km🚄", "不限✈️"],
     moodOptions: ["开心😁", "压力大😫", "心情低落😣", "想奖励自己🤭"],
-    weatherOptions: ["晴☀️", "多云☁️", "阴🌥️", "小雨🌧️", "雷阵雨⛈️","雪☃️","雾🌫️","打雷🌩️","台风🌀","流星🌠","大风🌬️","龙卷风🌪️","炎热🔥"],
+    weatherOptions: ["晴☀️", "多云☁️", "阴🌥️", "小雨🌧️", "雷阵雨⛈️", "雪☃️", "雾🌫️", "打雷🌩️", "台风🌀", "流星🌠", "大风🌬️", "龙卷风🌪️", "炎热🔥"],
 
-    guessList: [
-      { name: "干锅花菜", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
-      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
-      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
-      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+    guessList: [{
+        name: "干锅花菜",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
+      {
+        name: "蒜香排骨",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
+      {
+        name: "蒜香排骨",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
+      {
+        name: "蒜香排骨",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
     ],
-    historyList: [
-      { name: "番茄炒蛋", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
-      { name: "牛肉面", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
-      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
-      { name: "蒜香排骨", image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
+    historyList: [{
+        name: "番茄炒蛋",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
+      {
+        name: "牛肉面",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
+      {
+        name: "蒜香排骨",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
+      {
+        name: "蒜香排骨",
+        image: "https://ts4.tc.mm.bing.net/th/id/OIP-C.veNIhCS4msWOkn2eZUKT6AHaF7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+      },
     ]
   },
+
+  onLoad() {
+    this.loadRandomRecommend()
+  },
+
+  //随机推荐
+  // 假设你有用户ID存在 this.data.userId
+  loadRandomRecommend() {
+    const userId = this.data.userId || 0; // 先保证有值，实际要从登录信息获取
+
+    wx.request({
+      url: `http://39.106.228.153:8080/api/dish/random?user_id=${userId}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.code === 0) {
+          this.setData({
+            recommend: res.data.dish
+          });
+        } else {
+          wx.showToast({
+            title: '推荐加载失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: () => {
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  toggleLike() {
+    const { recommend, userId } = this.data;
+    if (!userId || !recommend.id) {
+      wx.showToast({ title: '用户未登录', icon: 'none' });
+      return;
+    }
+  
+    const action = recommend.liked ? 'unlike' : 'like';
+  
+    wx.request({
+      url: `http://39.106.228.153:8080/api/like/${action}`,
+      method: 'POST',
+      data: {
+        user_id: userId,
+        dish_id: recommend.id,
+      },
+      success: (res) => {
+        if (res.data.code === 0) {
+          // 切换 liked 状态
+          this.setData({
+            'recommend.liked': !recommend.liked
+          });
+        } else {
+          wx.showToast({ title: res.data.message || '操作失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '网络错误', icon: 'none' });
+      }
+    });
+  },
+  
 
   onTasteChange(e) {
     this.setData({
@@ -51,13 +134,13 @@ Page({
       'filters.budget': e.detail.value
     })
   },
-  
+
   onWeatherChange(e) {
     this.setData({
       'filters.weather': this.data.weatherOptions[e.detail.value]
     })
   },
-  
+
 
   onMoodChange(e) {
     this.setData({
@@ -79,7 +162,10 @@ Page({
       appId: "wxde8ac0a21135c07d", // 美团小程序
       path: `pages/index/index?query=${encodeURIComponent(keyword)}`,
       fail() {
-        wx.showToast({ title: '打开美团失败', icon: 'none' })
+        wx.showToast({
+          title: '打开美团失败',
+          icon: 'none'
+        })
       }
     })
   }

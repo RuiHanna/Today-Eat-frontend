@@ -1,73 +1,86 @@
 <!--index.wxml-->
 <view class="home-container">
 
-<!-- 顶部推荐卡片 -->
-<view class="recommend-card">
-  <image class="dish-img" src="{{recommend.image}}" mode="aspectFill" />
-  <view class="dish-info">
-    <view class="dish-name">{{recommend.name}}</view>
-    <view class="dish-reason">{{recommend.reason}}</view>
-    <view class="dish-price">￥{{recommend.priceMin}} - {{recommend.priceMax}}</view>
-    <button class="search-btn" bindtap="searchInMeituan">去美团看看</button>
-  </view>
-</view>
-
-<!-- 筛选区域 -->
-<view class="filter-section">
-  <!-- 第一行：口味 + 距离 -->
-  <view class="filter-grid">
-    <picker mode="selector" range="{{tasteOptions}}" bindchange="onTasteChange">
-      <view class="filter-item">口味：{{filters.taste}}</view>
-    </picker>
-    <picker mode="selector" range="{{distanceOptions}}" bindchange="onDistanceChange">
-      <view class="filter-item">距离：{{filters.distance}}</view>
-    </picker>
-  </view>
-
-  <!-- 第二行：心情 + 天气 -->
-  <view class="filter-grid">
-    <picker mode="selector" range="{{moodOptions}}" bindchange="onMoodChange">
-      <view class="filter-item">心情：{{filters.mood}}</view>
-    </picker>
-    <picker mode="selector" range="{{weatherOptions}}" bindchange="onWeatherChange">
-      <view class="filter-item">天气：{{filters.weather}}</view>
-    </picker>
-  </view>
-
-  <!-- 第三行：预算滑块 -->
-  <view class="slider-wrapper">
-    <view class="slider-label">预算：≤ ￥{{filters.budget}}</view>
-    <slider min="10" max="100" step="10" value="{{filters.budget}}" bindchange="onBudgetSlide" />
-  </view>
-
-  <!-- 第四行：换一换 -->
-  <view class="refresh-wrapper">
-    <button class="refresh-btn" bindtap="refreshRecommend">换一换</button>
-  </view>
-</view>
-
-<!-- 底部推荐 -->
-<view class="bottom-section">
-  <view class="bottom-subsection">
-    <view class="section-title">你可能还喜欢</view>
-    <block wx:for="{{guessList}}" wx:key="index">
-      <view class="flat-item">
-        <image class="flat-thumb" src="{{item.image}}" />
-        <view class="flat-text">{{item.name}}</view>
+  <!-- 顶部推荐卡片 -->
+  <view wx:if="{{recommend}}">
+    <view class="recommend-card">
+      <view class="left-img-wrapper">
+        <image class="dish-img" src="{{recommend.image}}" mode="aspectFill" />
       </view>
-    </block>
+
+      <view class="dish-info">
+        <view class="dish-name">{{recommend.name}}</view>
+        <view class="dish-reason">{{recommend.reason}}</view>
+        <view class="dish-price">￥{{recommend.priceMin}} - {{recommend.priceMax}}</view>
+      </view>
+    </view>
+
+    <!-- 卡片下方按钮区域 -->
+    <view class="recommend-actions">
+      <button class="like-btn {{recommend.liked ? 'liked' : ''}}" bindtap="toggleLike">
+        {{recommend.liked ? '❤️' : '🤍'}} 喜欢
+      </button>
+      <button class="search-btn" bindtap="searchInMeituan">去美团看看</button>
+    </view>
   </view>
 
-  <view class="bottom-subsection">
-    <view class="section-title">近期吃过</view>
-    <block wx:for="{{historyList}}" wx:key="index">
-      <view class="flat-item">
-        <image class="flat-thumb" src="{{item.image}}" />
-        <view class="flat-text">{{item.name}}</view>
-      </view>
-    </block>
+
+  <!-- 筛选区域 -->
+  <view class="filter-section">
+    <!-- 第一行：口味 + 距离 -->
+    <view class="filter-grid">
+      <picker mode="selector" range="{{tasteOptions}}" bindchange="onTasteChange">
+        <view class="filter-item">口味：{{filters.taste}}</view>
+      </picker>
+      <picker mode="selector" range="{{distanceOptions}}" bindchange="onDistanceChange">
+        <view class="filter-item">距离：{{filters.distance}}</view>
+      </picker>
+    </view>
+
+    <!-- 第二行：心情 + 天气 -->
+    <view class="filter-grid">
+      <picker mode="selector" range="{{moodOptions}}" bindchange="onMoodChange">
+        <view class="filter-item">心情：{{filters.mood}}</view>
+      </picker>
+      <picker mode="selector" range="{{weatherOptions}}" bindchange="onWeatherChange">
+        <view class="filter-item">天气：{{filters.weather}}</view>
+      </picker>
+    </view>
+
+    <!-- 第三行：预算滑块 -->
+    <view class="slider-wrapper">
+      <view class="slider-label">预算：≤ ￥{{filters.budget}}</view>
+      <slider min="10" max="100" step="10" value="{{filters.budget}}" bindchange="onBudgetSlide" />
+    </view>
+
+    <!-- 第四行：换一换 -->
+    <view class="refresh-wrapper">
+      <button class="refresh-btn" bindtap="refreshRecommend">换一换</button>
+    </view>
   </view>
-</view>
+
+  <!-- 底部推荐 -->
+  <view class="bottom-section">
+    <view class="bottom-subsection">
+      <view class="section-title">你可能还喜欢</view>
+      <block wx:for="{{guessList}}" wx:key="index">
+        <view class="flat-item">
+          <image class="flat-thumb" src="{{item.image}}" />
+          <view class="flat-text">{{item.name}}</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="bottom-subsection">
+      <view class="section-title">近期吃过</view>
+      <block wx:for="{{historyList}}" wx:key="index">
+        <view class="flat-item">
+          <image class="flat-thumb" src="{{item.image}}" />
+          <view class="flat-text">{{item.name}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
 
 
 </view>
