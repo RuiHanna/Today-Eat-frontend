@@ -41,13 +41,46 @@ Page({
 
   onShow() {
     const userId = wx.getStorageSync('user_id')
-    if (!userId) return
+    if (!userId) {
+      console.warn('未登录')
+      return
+    }
 
     this.setData({
       loggedIn: true
     })
     this.loadUserFavorites(userId)
     this.loadUserHistory(userId)
+    // 拉取用户详细信息
+    wx.request({
+      url: `http://39.106.228.153:8080/api/user/info?user_id=${userId}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.code === 0) {
+          const info = res.data.data
+          this.setData({
+            user: {
+              ...this.data.user,
+              mealCount: info.meal_count,
+              favoriteTaste: info.favorite_taste || '未统计',
+              commonMood: info.common_mood || '无',
+              moodFood: info.mood_food || '暂无推荐'
+            },
+          })
+        } else {
+          wx.showToast({
+            title: '获取信息失败',
+            icon: 'none'
+          })
+        }
+      },
+      fail: () => {
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        })
+      }
+    })
   },
 
   //加载用户收藏
@@ -130,7 +163,11 @@ Page({
                     user: {
                       ...that.data.user,
                       nickname: userInfo.nickName,
-                      avatarUrl: userInfo.avatarUrl
+                      avatarUrl: userInfo.avatarUrl,
+                      mealCount: userInfo.meal_count,
+                      favoriteTaste: userInfo.favorite_taste || '未统计',
+                      commonMood: userInfo.common_mood || '无',
+                      moodFood: userInfo.mood_food || '暂无推荐'
                     },
                     loggedIn: true
                   })
