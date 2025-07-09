@@ -1,7 +1,7 @@
 // index.js
 Page({
   data: {
-    userId: 1,
+    userId: null,
     recommend: null,
     filters: {
       taste: "辣🌶️",
@@ -53,6 +53,7 @@ Page({
 
   onLoad() {
     const userId = wx.getStorageSync('user_id')
+    console.log(userId)
     if (userId) {
       this.setData({
         userId
@@ -101,6 +102,11 @@ Page({
         title: '用户未登录',
         icon: 'none'
       });
+      setTimeout(() => {
+        wx.reLaunch({
+          url: '/pages/user/user',
+        });
+      }, 800);
       return;
     }
 
