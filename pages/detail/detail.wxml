@@ -1,0 +1,30 @@
+<!--pages/detail/detail.wxml-->
+<view class="page fade-in">
+  <view class="dish-card">
+    <image class="dish-img" src="{{dish.image}}" mode="aspectFill" />
+    <view class="dish-info">
+      <view class="dish-title">{{dish.name}}</view>
+      <view class="dish-description">{{dish.description}}</view>
+
+      <view class="dish-tags">
+        <text class="tag">口味：{{dish.taste}}</text>
+        <text class="tag">价格：¥{{dish.priceMin}} - {{dish.priceMax}}</text>
+        <text class="tag">评分：{{dish.score}}</text>
+      </view>
+
+      <view class="dish-actions">
+        <button class="like-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike" style="width: 100%;">{{liked ? '取消点赞' : '点赞'}}</button>
+        <button class="rate-btn" bindtap="openRating" style="width: 100%;">评分</button>
+        <button class="meituan-btn" bindtap="searchInMeituan" style="width: 100%;">跳转美团</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="rate-popup" wx:if="{{showRating}}">
+    <view class="popup">
+      <text class="popup-title">为此菜品打个分吧~</text>
+      <slider min="0" max="10" step="0.1" value="{{rating}}" show-value bindchange="onRateChange"/>
+      <button class="confirm-btn" bindtap="submitRating">提交</button>
+    </view>
+  </view>
+</view>

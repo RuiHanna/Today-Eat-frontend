@@ -5,7 +5,8 @@
     <view class="welcome">
       <image class="welcome-icon" src="/icons/ai-avatar.png" />
       <view class="bold-welcome-text">嗨！我是TodayEat</view>
-      <view class="welcome-text">我可以为你定制化推荐美食，\n今天想吃点什么呢～ 🍜</view>
+      <view class="welcome-text">我可以为你定制化推荐美食，</view>
+      <view class="welcome-text">今天想吃点什么呢～ 🍜</view>
     </view>
   </block>
 
