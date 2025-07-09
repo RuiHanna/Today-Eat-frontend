@@ -61,14 +61,24 @@
     <view class="section">
       <view class="section-header" bindtap="toggleHistory">
         <text>推荐历史</text>
-        <text wx:if="{{showHistory}}">▲</text>
+        <text wx:if="{{isHistoryExpanded}}">▲</text>
         <text wx:else>▼</text>
       </view>
-      <view wx:if="{{showHistory}}" class="section-content">
-        <block wx:for="{{history}}" wx:key="index">
-          <view class="dish-item">{{item.name}}</view>
-        </block>
+      <view animation="{{historyAnim}}" class="section-content-anim">
+        <view wx:if="{{showHistory}}" class="section-content">
+          <block wx:for="{{history}}" wx:key="id">
+            <view class="dish-card">
+              <image class="dish-img" src="{{item.image_url}}" />
+              <view class="dish-info">
+                <view class="dish-name">{{item.name}}</view>
+                <view class="dish-desc">{{item.description}}</view>
+                <view class="dish-extra">￥{{item.price}} ｜ {{item.taste}} ｜ 评分 {{item.score}}</view>
+              </view>
+            </view>
+          </block>
+        </view>
       </view>
     </view>
+
   </view>
 </scroll-view>

@@ -18,16 +18,10 @@ Page({
     favorites: [],
     favoritesAnim: null,
     isFavoritesExpanded: false,
-    history: [{
-        name: '宫保鸡丁'
-      },
-      {
-        name: '回锅肉'
-      },
-      {
-        name: '干锅肥肠'
-      }
-    ],
+    history: [],
+    showHistory: false,
+    isHistoryExpanded: false,
+    historyAnim: null,
   },
 
   onLoad() {
@@ -53,8 +47,10 @@ Page({
       loggedIn: true
     })
     this.loadUserFavorites(userId)
+    this.loadUserHistory(userId)
   },
 
+  //加载用户收藏
   loadUserFavorites(userId) {
     wx.request({
       url: `http://39.106.228.153:8080/api/user/${userId}/favorites`,
@@ -67,6 +63,32 @@ Page({
         } else {
           wx.showToast({
             title: '获取收藏失败',
+            icon: 'none'
+          })
+        }
+      },
+      fail: () => {
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        })
+      }
+    })
+  },
+
+  //加载推荐历史
+  loadUserHistory(userId) {
+    wx.request({
+      url: `http://39.106.228.153:8080/api/history?user_id=${userId}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.code === 0) {
+          this.setData({
+            history: res.data.history
+          })
+        } else {
+          wx.showToast({
+            title: '获取推荐历史失败',
             icon: 'none'
           })
         }
@@ -129,12 +151,13 @@ Page({
     })
   },
 
+  //我喜欢的面板
   toggleFavorites() {
     const animation = wx.createAnimation({
       duration: 300,
       timingFunction: 'ease-in-out'
     });
-  
+
     if (this.data.isFavoritesExpanded) {
       // 收起动画
       animation.height(0).opacity(0).step();
@@ -161,11 +184,39 @@ Page({
     }
   },
 
+  //推荐历史面板
   toggleHistory() {
-    this.setData({
-      showHistory: !this.data.showHistory
-    })
+    const animation = wx.createAnimation({
+      duration: 300,
+      timingFunction: 'ease-in-out'
+    });
+
+    if (this.data.isHistoryExpanded) {
+      // 收起动画
+      animation.height(0).opacity(0).step();
+      this.setData({
+        historyAnim: animation.export(),
+        isHistoryExpanded: false, // 立即切换箭头
+      });
+      setTimeout(() => {
+        this.setData({
+          showHistory: false,
+        });
+      }, 300);
+    } else {
+      // 展开动画
+      this.setData({
+        showHistory: true,
+      }, () => {
+        animation.height('auto').opacity(1).step();
+        this.setData({
+          historyAnim: animation.export(),
+          isHistoryExpanded: true, // 动画开始后切换箭头
+        });
+      });
+    }
   },
+
 
   // 修改昵称实时绑定
   onNicknameInput(e) {
@@ -280,6 +331,5 @@ Page({
       }
     })
   }
-
 
 })
