@@ -195,24 +195,22 @@ Page({
 
   //定制推荐
   refreshRecommend() {
-    const {
-      userId,
-      filters
-    } = this.data;
-
+    const { userId, filters } = this.data;
+  
     if (!userId) {
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
+      wx.showToast({ title: '请先登录', icon: 'none' });
       setTimeout(() => {
-        wx.reLaunch({
-          url: '/pages/user/user'
-        });
+        wx.reLaunch({ url: '/pages/user/user' });
       }, 800);
       return;
     }
-
+  
+    // 显示加载提示
+    wx.showLoading({
+      title: '正在生成推荐...',
+      mask: true
+    });
+  
     wx.request({
       url: 'http://39.106.228.153:8080/api/dish/custom',
       method: 'POST',
@@ -225,25 +223,23 @@ Page({
         weather: filters.weather
       },
       success: (res) => {
+        wx.hideLoading(); // 无论成功与否，先隐藏加载提示
+  
         if (res.data.code === 0 && res.data.dish) {
-          const dish = res.data.dish;
           this.setData({
-            recommend: dish
+            recommend: res.data.dish
           });
-          // 上报推荐记录
-          this.reportRecommendHistory(userId, dish.id);
+  
+          // 上报推荐历史
+          this.reportRecommendHistory(userId, res.data.dish.id);
+  
         } else {
-          wx.showToast({
-            title: '暂无推荐',
-            icon: 'none'
-          });
+          wx.showToast({ title: res.data.message || '暂无推荐', icon: 'none' });
         }
       },
       fail: () => {
-        wx.showToast({
-          title: '网络错误',
-          icon: 'none'
-        });
+        wx.hideLoading();
+        wx.showToast({ title: '网络错误', icon: 'none' });
       }
     });
   },
