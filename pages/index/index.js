@@ -33,6 +33,33 @@ Page({
     this.loadHistoryList()
   },
 
+  refreshRecommendLikeStatus() {
+    const userId = wx.getStorageSync('user_id');
+    const recommend = this.data.recommend;
+    if (!userId || !recommend || !recommend.id) return;
+  
+    wx.request({
+      url: `http://39.106.228.153:8080/api/dish/detail?id=${recommend.id}&user_id=${userId}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.code === 0 && res.data.data) {
+          const updated = res.data.data;
+          this.setData({
+            recommend: {
+              ...recommend,
+              liked: updated.liked,      // 更新点赞状态
+              score: updated.score || 0  // 可选更新评分等
+            }
+          });
+        }
+      }
+    });
+  },
+
+  onShow() {
+    this.refreshRecommendLikeStatus();
+  },  
+
   // 上报推荐记录
   reportRecommendHistory(userId, dishId) {
     if (!userId || !dishId) return;
@@ -279,5 +306,13 @@ Page({
         })
       }
     })
+  },
+
+  //详情跳转
+  goToDetail() {
+    const { recommend } = this.data;
+    wx.navigateTo({
+      url: `/pages/detail/detail?id=${recommend.id}`
+    });
   }
 })

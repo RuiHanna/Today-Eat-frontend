@@ -8,9 +8,9 @@ Page({
       avatarUrl: defaultAvatarUrl,
       nickname: '',
       mealCount: 0,
-      favoriteTaste: '未统计',
-      commonMood: '无',
-      moodFood: '暂无推荐'
+      favoriteTaste: '',
+      commonMood: '',
+      moodFood: ''
     },
     loggedIn: false,
     showFavorites: false,

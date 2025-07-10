@@ -3,7 +3,7 @@
 
   <!-- 顶部推荐卡片 -->
   <view wx:if="{{recommend}}">
-    <view class="recommend-card">
+    <view class="recommend-card" bindtap="goToDetail">
       <view class="left-img-wrapper">
         <image class="dish-img" src="{{recommend.image}}" mode="aspectFill" />
       </view>
